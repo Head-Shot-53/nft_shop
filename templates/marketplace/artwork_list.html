@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Галерея цифрових робіт</title>
+</head>
+<body>
+    <h1>Галерея цифрових робіт</h1>
+
+    {% for artwork in artworks %}
+        <div style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
+            <h2>{{ artwork.title }}</h2>
+            <p><strong>Тип:</strong> {{ artwork.get_art_type_display }}</p>
+            <p><strong>Ціна:</strong> {{ artwork.price }} €</p>
+            <p><strong>Автор:</strong> {{ artwork.author.username }}</p>
+
+            {% if artwork.art_type == "image" %}
+                <img src="{{ artwork.file.url }}" alt="{{ artwork.title }}" width="200">
+            {% else %}
+                <p><a href="{{ artwork.file.url }}">Завантажити/переглянути</a></p>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>Поки що немає робіт </p>
+    {% endfor %}
+</body>
+</html>
