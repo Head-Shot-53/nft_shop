@@ -1,27 +1,43 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <title>Галерея цифрових робіт</title>
-</head>
-<body>
-    <h1>Галерея цифрових робіт</h1>
+{% extends "base.html" %}
 
+{% block title %}Галерея робіт - NFT Store{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">🎨 Галерея цифрових робіт</h1>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     {% for artwork in artworks %}
-        <div style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
-            <h2>{{ artwork.title }}</h2>
-            <p><strong>Тип:</strong> {{ artwork.get_art_type_display }}</p>
-            <p><strong>Ціна:</strong> {{ artwork.price }} €</p>
-            <p><strong>Автор:</strong> {{ artwork.author.username }}</p>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if artwork.art_type == "image" %}
+                    <img src="{{ artwork.file.url }}" class="card-img-top" alt="{{ artwork.title }}">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <p class="text-muted">Інший тип файлу</p>
+                    </div>
+                {% endif %}
 
-            {% if artwork.art_type == "image" %}
-                <img src="{{ artwork.file.url }}" alt="{{ artwork.title }}" width="200">
-            {% else %}
-                <p><a href="{{ artwork.file.url }}">Завантажити/переглянути</a></p>
-            {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ artwork.title }}</h5>
+                    <p class="card-text">
+                        <strong>Тип:</strong> {{ artwork.get_art_type_display }}<br>
+                        <strong>Ціна:</strong> {{ artwork.price }} €<br>
+                        <strong>Автор:</strong> {{ artwork.author.username }}<br>
+                        <strong>Статус:</strong> {{ artwork.get_status_display }}
+                    </p>
+                </div>
+
+                {% if artwork.art_type != "image" %}
+                    <div class="card-footer text-center">
+                        <a href="{{ artwork.file.url }}" class="btn btn-outline-primary" target="_blank">Переглянути файл</a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     {% empty %}
-        <p>Поки що немає робіт </p>
+        <div class="col">
+            <p class="text-muted">Поки що немає робіт 😢</p>
+        </div>
     {% endfor %}
-</body>
-</html>
+</div>
+{% endblock %}

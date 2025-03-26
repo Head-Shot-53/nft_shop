@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load form_tags %}
+
+{% block title %}Редагування - {{ artwork.title }}{% endblock %}
+
+{% block content %}
+<h1>Редагування "{{ artwork.title }}"</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Зберегти</button>
+    <a href="{% url 'artwork_detail' artwork.id %}" class="btn btn-secondary">Назад</a>
+</form>
+{% endblock %}

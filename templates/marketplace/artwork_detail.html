@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{{ artwork.title }} - NFT{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center">
+    <div class="card shadow-sm p-4" style="max-width: 700px; width: 100%;">
+        <h2 class="mb-3">{{ artwork.title }}</h2>
+
+        <ul class="list-unstyled mb-4">
+            <li><strong>Автор:</strong> {{ artwork.author.username }}</li>
+            <li><strong>Тип:</strong> {{ artwork.get_art_type_display }}</li>
+            <li><strong>Ціна:</strong> {{ artwork.price }} €</li>
+            <li><strong>Статус:</strong> {{ artwork.get_status_display }}</li>
+            <li><strong>Опис:</strong> {{ artwork.description }}</li>
+        </ul>
+
+        {% if artwork.art_type == "image" %}
+            <div class="text-center mb-4">
+                <img src="{{ artwork.file.url }}" alt="{{ artwork.title }}" class="img-fluid rounded shadow-sm" style="max-height: 350px;">
+            </div>
+        {% else %}
+            <p><a href="{{ artwork.file.url }}" class="btn btn-outline-primary">Переглянути файл</a></p>
+        {% endif %}
+
+        {% if user == artwork.author %}
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'edit_artwork' artwork.id %}" class="btn btn-warning">✏️ Редагувати</a>
+                <form method="post" action="{% url 'delete_artwork' artwork.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">🗑 Видалити</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

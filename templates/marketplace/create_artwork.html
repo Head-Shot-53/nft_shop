@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load form_tags %}
+
+{% block title %}Додати нову роботу{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">🖼 Додати нову цифрову роботу</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Зберегти</button>
+</form>
+{% endblock %}

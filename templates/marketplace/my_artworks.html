@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load form_tags %}
+
+{% block title %}Мої роботи - NFT Store{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">👤 Мої цифрові роботи</h1>
+
+{% if artworks %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for artwork in artworks %}
+            <div class="col" style="max-width: 300px;">
+                <div class="card h-100 shadow-sm">
+                    <a href="{% url 'artwork_detail' artwork.id %}" class="text-decoration-none text-dark">
+                        {% if artwork.art_type == "image" %}
+                            <img src="{{ artwork.file.url }}" class="card-img-top object-fit-cover rounded-top border-bottom" alt="{{ artwork.title }}" style="height: 140px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 140px;">
+                                <p class="text-muted m-0">Файл: {{ artwork.get_art_type_display }}</p>
+                            </div>
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h5 class="card-title">{{ artwork.title }}</h5>
+                            <p class="card-text">
+                                <strong>Тип:</strong> {{ artwork.get_art_type_display }}<br>
+                                <strong>Ціна:</strong> {{ artwork.price }} €<br>
+                                <strong>Статус:</strong> {{ artwork.get_status_display }}
+                            </p>
+                        </div>
+                    </a>
+
+                    <!-- форма ПОЗА посиланням -->
+                    <div class="card-footer">
+                        <form method="post" class="m-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="artwork_id" value="{{ artwork.id }}">
+                            <div class="d-flex gap-2 align-items-center">
+                                {{ form.status|add_class:"form-select form-select-sm" }}
+                                <button type="submit" class="btn btn-outline-primary btn-sm">OK</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted text-center">У вас ще немає робіт 🖼</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Головна — NFT Магазин{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1 class="display-4">Ласкаво просимо до NFT Магазину</h1>
+        <p class="lead">Купуй, продавай та досліджуй цифрове мистецтво.</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'artwork_list' %}">Переглянути роботи</a>
+    </div>
+
+    <hr>
+
+    <h2 class="mt-5">Новини та Розпродажі</h2>
+    <ul class="list-group">
+        <li class="list-group-item">🎉 Новий реліз: 3D персонажі від AlexArt</li>
+        <li class="list-group-item">🔥 Весняний розпродаж: знижки до 30%</li>
+        <li class="list-group-item">🆕 Новий розділ "Анімації" відкрито!</li>
+    </ul>
+{% endblock %}
