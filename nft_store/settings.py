@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'marketplace'
+    'marketplace',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# LOGIN_URL = '/admin/login/'  # тимчасово
+
+LOGIN_REDIRECT_URL = 'my_artworks'
+LOGOUT_REDIRECT_URL = 'artwork_list'
