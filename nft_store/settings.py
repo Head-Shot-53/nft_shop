@@ -132,3 +132,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_REDIRECT_URL = 'my_artworks'
 LOGOUT_REDIRECT_URL = 'artwork_list'
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [ BASE_DIR / "static" ]
