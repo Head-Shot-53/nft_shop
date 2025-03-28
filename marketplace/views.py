@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import DigitalArtwork
+from .models import DigitalArtwork, Category
 from .forms import ArtWorksStatusForms, ArtWorkCreateForm
 from django.contrib.auth.decorators import login_required
 
@@ -70,3 +70,15 @@ def edit_artwork(request, artwork_id):
 
     return render(request, 'marketplace/edit_artwork.html', {'form': form, 'artwork': artwork})
 
+def category_list(request):
+    parent_categories = Category.objects.filter(parent_isnull=True).prefetch_related('children')
+    return render(request, 'marketplace/category_list.html', {'categories': parent_categories})
+
+def artworks_by_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    artworks = DigitalArtwork.objects.filter(category=category)
+
+    return render(request, 'marketplace/artworks_by_category.html', {
+        'category': category,
+        'artworks': artworks
+    })
