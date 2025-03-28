@@ -9,4 +9,4 @@ class ArtWorksStatusForms(forms.ModelForm):
 class ArtWorkCreateForm(forms.ModelForm):
     class Meta:
         model = DigitalArtwork
-        fields = ['title', 'description', 'price', 'art_type', 'file', 'status']
+        fields = ['title', 'description', 'price', 'art_type', 'file', 'status', 'category']
