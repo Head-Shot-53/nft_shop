@@ -25,9 +25,13 @@
                             <p class="card-text">
                                 <strong>Тип:</strong> {{ artwork.get_art_type_display }}<br>
                                 <strong>Ціна:</strong> {{ artwork.price }} €<br>
+                                {% if artwork.category %}
+                                    <strong>Категорія:</strong> {{ artwork.category.name }}<br>
+                                {% endif %}
                                 <strong>Статус:</strong> {{ artwork.get_status_display }}
                             </p>
                         </div>
+                        
                     </a>
 
                     <!-- форма ПОЗА посиланням -->
