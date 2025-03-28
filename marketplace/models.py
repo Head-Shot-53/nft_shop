@@ -1,6 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=200)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='children'
+    )
+
+    class Meta:
+        verbose_name = 'Категорія',     
+        verbose_name_plural = "Категорії"
+
+    def __str__(self):
+        return f'{self.parent.name + ' -> ' if self.parent else ""} {self.name}'
+    
+
 class DigitalArtwork(models.Model):
     ART_TYPE_CHOICES = [
         ('image', 'Картинка'),
@@ -24,6 +43,8 @@ class DigitalArtwork(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.title
+    
