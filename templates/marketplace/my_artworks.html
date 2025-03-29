@@ -7,22 +7,25 @@
 <h1 class="mb-4 text-center">👤 Мої цифрові роботи</h1>
 
 {% if artworks %}
-    <div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
         {% for artwork in artworks %}
-            <div class="col" style="max-width: 300px;">
-                <div class="card h-100 shadow-sm">
-                    <a href="{% url 'artwork_detail' artwork.id %}" class="text-decoration-none text-dark">
+            <div class="col" style="max-width: 320px;">
+                <div class="card h-100 shadow-sm border-0">
+                    
+                    <!-- Картинка або заглушка -->
+                    <a href="{% url 'artwork_detail' artwork.id %}" class="text-decoration-none text-light">
                         {% if artwork.art_type == "image" %}
-                            <img src="{{ artwork.file.url }}" class="card-img-top object-fit-cover rounded-top border-bottom" alt="{{ artwork.title }}" style="height: 140px; object-fit: cover;">
+                            <img src="{{ artwork.file.url }}" alt="{{ artwork.title }}" class="card-img-top object-fit-cover rounded-top border-bottom" style="height: 160px; object-fit: cover;">
                         {% else %}
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 140px;">
-                                <p class="text-muted m-0">Файл: {{ artwork.get_art_type_display }}</p>
+                            <div class="card-img-top d-flex align-items-center justify-content-center bg-dark-subtle text-light" style="height: 160px;">
+                                <p class="m-0">Файл: {{ artwork.get_art_type_display }}</p>
                             </div>
                         {% endif %}
 
-                        <div class="card-body">
-                            <h5 class="card-title">{{ artwork.title }}</h5>
-                            <p class="card-text">
+                        <!-- Тіло картки -->
+                        <div class="card-body text-light" style="background-color: rgba(0, 0, 0, 0.5);">
+                            <h5 class="card-title mb-2 fw-semibold">{{ artwork.title }}</h5>
+                            <p class="card-text small mb-0">
                                 <strong>Тип:</strong> {{ artwork.get_art_type_display }}<br>
                                 <strong>Ціна:</strong> {{ artwork.price }} €<br>
                                 {% if artwork.category %}
@@ -31,20 +34,18 @@
                                 <strong>Статус:</strong> {{ artwork.get_status_display }}
                             </p>
                         </div>
-                        
                     </a>
 
-                    <!-- форма ПОЗА посиланням -->
-                    <div class="card-footer">
-                        <form method="post" class="m-0">
+                    <!-- Форма зміни статусу -->
+                    <div class="card-footer bg-transparent border-0">
+                        <form method="post" action="{% url 'change_artwork_status' %}" class="d-flex gap-2 align-items-center">
                             {% csrf_token %}
                             <input type="hidden" name="artwork_id" value="{{ artwork.id }}">
-                            <div class="d-flex gap-2 align-items-center">
-                                {{ form.status|add_class:"form-select form-select-sm" }}
-                                <button type="submit" class="btn btn-outline-primary btn-sm">OK</button>
-                            </div>
+                            {{ form.status|add_class:"form-select form-select-sm" }}
+                            <button type="submit" class="btn btn-outline-primary btn-sm">OK</button>
                         </form>
                     </div>
+
                 </div>
             </div>
         {% endfor %}
