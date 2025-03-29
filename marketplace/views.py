@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import DigitalArtwork, Category
 from .forms import ArtWorksStatusForms, ArtWorkCreateForm
 from django.contrib.auth.decorators import login_required
+from .commands import PublishArtWorkCommand, MarkAsSoldCommand, SetDraftCommand
 
 def home(request):
     return render(request, 'marketplace/home.html')
@@ -71,7 +72,7 @@ def edit_artwork(request, artwork_id):
     return render(request, 'marketplace/edit_artwork.html', {'form': form, 'artwork': artwork})
 
 def category_list(request):
-    parent_categories = Category.objects.filter(parent_isnull=True).prefetch_related('children')
+    parent_categories = Category.objects.filter(parent__isnull=True).prefetch_related('children')
     return render(request, 'marketplace/category_list.html', {'categories': parent_categories})
 
 def artworks_by_category(request, category_id):
@@ -82,3 +83,28 @@ def artworks_by_category(request, category_id):
         'category': category,
         'artworks': artworks
     })
+
+
+@login_required
+def change_artwork_status(request):
+    if request.method == 'POST':
+        artwork_id = request.POST.get('artwork_id')
+        new_status = request.POST.get('status')
+        
+        artwork = get_object_or_404(DigitalArtwork, id=artwork_id, author = request.user)
+
+        command_map = {
+            'draft':SetDraftCommand,
+            'published':PublishArtWorkCommand,
+            'sold':MarkAsSoldCommand,
+        }
+
+        command_class = command_map.get(new_status)
+
+        if command_class:
+            command = command_class(artwork)
+            command.execute()
+
+
+        return redirect('my_artworks')
+    
