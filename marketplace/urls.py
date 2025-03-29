@@ -11,5 +11,5 @@ urlpatterns = [
     path('artwork/<int:artwork_id>/edit/', views.edit_artwork, name='edit_artwork'),
     path('categories/', views.category_list, name='category_list'),
     path('category/<int:category_id>/', views.artworks_by_category, name='artworks_by_category'),
-
+    path('change-status/', views.change_artwork_status, name='change_artwork_status'),
 ]
