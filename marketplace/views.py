@@ -3,6 +3,14 @@ from .models import DigitalArtwork, Category
 from .forms import ArtWorksStatusForms, ArtWorkCreateForm
 from django.contrib.auth.decorators import login_required
 from .commands import PublishArtWorkCommand, MarkAsSoldCommand, SetDraftCommand
+from django.contrib import messages
+from .payment_handlers import (
+    PaymentRequest,
+    AvailabilityCheckHandler,
+    DiscountHandler,
+    LoggingHandler,
+    FinalizePaymentHandler,
+)
 
 def home(request):
     return render(request, 'marketplace/home.html')
@@ -108,3 +116,27 @@ def change_artwork_status(request):
 
         return redirect('my_artworks')
     
+@login_required
+def process_payment(request, artwork_id):
+    artwork = get_object_or_404(DigitalArtwork, id=artwork_id)
+
+    pay_request = PaymentRequest(request.user, artwork, artwork.price)
+
+    chain = AvailabilityCheckHandler()
+    chain.set_next(DiscountHandler())\
+         .set_next(LoggingHandler())\
+         .set_next(FinalizePaymentHandler())
+
+    result = chain.handle(pay_request)
+
+    if result.is_successful:
+        messages.success(request, "Оплата пройшла успішно!")
+    else:
+        messages.error(request, "Оплата не вдалася: " + "; ".join(result.notes))
+
+    return redirect('artwork_detail', artwork_id=artwork.id)
+
+@login_required
+def my_purchases(request):
+    purchases = DigitalArtwork.objects.filter(buyer=request.user)
+    return render(request, 'marketplace/my_purchases.html', {'purchases': purchases})
