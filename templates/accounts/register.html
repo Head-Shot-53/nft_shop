@@ -1,6 +1,36 @@
-<h2>Реєстрація</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Зареєструватися</button>
-</form>
+{% extends "base.html" %}
+
+{% block title %}Реєстрація - NFT Store{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">📝 Реєстрація</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-success w-100">Зареєструватися</button>
+                </form>
+
+                <div class="mt-3 text-center">
+                    Вже маєте акаунт?
+                    <a href="{% url 'login' %}">Увійти</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
