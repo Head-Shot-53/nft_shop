@@ -11,5 +11,5 @@ def register_view(request):
             return redirect('my_artworks')
     else:
         form = UserRegisterForm()
-    return render(request, 'accounts/register.html')
+    return render(request, 'accounts/register.html', {'form': form})
 
