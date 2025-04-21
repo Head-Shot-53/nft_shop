@@ -4,38 +4,6 @@
     <meta charset="UTF-8">
     <title>{% block title %}NFT Store{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- <style>
-        body {
-          background: linear-gradient(to bottom right, #0f0c29, #302b63, #24243e);
-          background-attachment: fixed;
-          color: #ffffff;
-        }
-      
-        .card {
-          background-color: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(6px);
-          color: #ffffff;
-        }
-      
-        .btn {
-          font-weight: 500;
-        }
-      
-        a, a:hover {
-          color: #f5f5f5;
-        }
-      
-        input, select, textarea {
-          background-color: rgba(255, 255, 255, 0.1) !important;
-          color: #ffffff !important;
-        }
-      
-        .form-control::placeholder {
-          color: #cccccc;
-        }
-      </style> -->
-      
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
@@ -43,18 +11,24 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'my_artworks' %}">Мої роботи</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'category_list' %}">Категорії</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Вийти</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'create_artwork' %}">Додати роботу</a>
-                    </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Профіль" width="30" height="30" class="rounded-circle me-2">
+                        {{ user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'my_artworks' %}">🎨 Мої роботи</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my_purchases' %}">🛜️ Мої покупки</a></li>
+                        <li><a class="dropdown-item" href="{% url 'create_artwork' %}">➕ Додати роботу</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item text-danger">🚪 Вийти</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Увійти</a>
@@ -72,6 +46,98 @@
         {% endblock %}
     </div>
 
+    <!-- 🔽 Обробка трансакції -->
+    <div class="modal fade" id="processingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-4">
+                <div class="modal-body">
+                    <div id="processingStep">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <p>🔄 Обробка трансакції... Будь ласка, зачекайте</p>
+                    </div>
+                    <div id="successStep" style="display: none;">
+                        <div class="text-success display-6">✅</div>
+                        <p>Покупка успішна!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔽 Попередній перегляд NFT -->
+    <div class="modal fade" id="nftPreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="d-flex flex-column flex-md-row gap-4">
+                        <img id="nftModalImage" src="" class="img-fluid rounded" alt="NFT" style="max-height: 350px;">
+                        <div>
+                            <h4 id="nftModalTitle"></h4>
+                            <p class="mb-1"><strong>Тип:</strong> <span id="nftModalType"></span></p>
+                            <p class="mb-1"><strong>Ціна:</strong> <span id="nftModalPrice"></span> €</p>
+                            <p class="mb-1"><strong>Автор:</strong> <span id="nftModalAuthor"></span></p>
+                            <p class="mb-3"><strong>Опис:</strong> <span id="nftModalDescription"></span></p>
+                            <div id="nftModalBuySection"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Покупка
+        const forms = document.querySelectorAll(".buy-form");
+        forms.forEach(form => {
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const modal = new bootstrap.Modal(document.getElementById('processingModal'));
+                modal.show();
+                document.getElementById('processingStep').style.display = 'block';
+                document.getElementById('successStep').style.display = 'none';
+                fetch(form.action, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": form.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                }).then(response => {
+                    if (response.redirected) {
+                        document.getElementById('processingStep').style.display = 'none';
+                        document.getElementById('successStep').style.display = 'block';
+                        setTimeout(() => { window.location.href = response.url; }, 1500);
+                    }
+                });
+            });
+        });
+
+        // Попередній перегляд NFT
+        document.querySelectorAll('.nft-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const modal = new bootstrap.Modal(document.getElementById('nftPreviewModal'));
+                document.getElementById('nftModalImage').src = card.dataset.image;
+                document.getElementById('nftModalTitle').innerText = card.dataset.title;
+                document.getElementById('nftModalType').innerText = card.dataset.type;
+                document.getElementById('nftModalPrice').innerText = card.dataset.price;
+                document.getElementById('nftModalAuthor').innerText = card.dataset.author;
+                document.getElementById('nftModalDescription').innerText = card.dataset.description;
+                const buySection = document.getElementById('nftModalBuySection');
+                if (card.dataset.sold === "true") {
+                    buySection.innerHTML = '<span class="badge bg-danger">Продано</span>';
+                } else {
+                    buySection.innerHTML = `
+                        <form method="post" action="/artwork/${card.dataset.artId}/buy/" class="buy-form mt-3">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('input[name=csrfmiddlewaretoken]')?.value || ''}">
+                            <button type="submit" class="btn btn-success">💸 Купити</button>
+                        </form>
+                    `;
+                }
+                modal.show();
+            });
+        });
+    });
+    </script>
 </body>
 </html>
