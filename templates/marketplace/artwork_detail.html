@@ -23,15 +23,19 @@
             <p><a href="{{ artwork.file.url }}" class="btn btn-outline-primary">Переглянути файл</a></p>
         {% endif %}
 
-        {% if user == artwork.author %}
-            <div class="d-flex justify-content-end gap-2">
-                <a href="{% url 'edit_artwork' artwork.id %}" class="btn btn-warning">✏️ Редагувати</a>
-                <form method="post" action="{% url 'delete_artwork' artwork.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">🗑 Видалити</button>
-                </form>
-            </div>
-        {% endif %}
+        <div class="d-flex justify-content-between mt-4">
+            {% if user == artwork.author %}
+                <div class="d-flex gap-2">
+                    <a href="{% url 'edit_artwork' artwork.id %}" class="btn btn-warning">✏️ Редагувати</a>
+                    <form method="post" action="{% url 'delete_artwork' artwork.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">🗑 Видалити</button>
+                    </form>
+                </div>
+            {% elif artwork.status != 'sold' %}
+                <a href="{% url 'buy_artwork' artwork.id %}" class="btn btn-success">💸 Купити</a>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

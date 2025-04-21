@@ -1,20 +1,55 @@
-{% extends 'base.html' %}
-
-{% block title %}Головна — NFT Магазин{% endblock %}
+{% extends "base.html" %}
+{% block title %}NFT Store - Головна{% endblock %}
 
 {% block content %}
-    <div class="text-center">
-        <h1 class="display-4">Ласкаво просимо до NFT Магазину</h1>
-        <p class="lead">Купуй, продавай та досліджуй цифрове мистецтво.</p>
-        <a class="btn btn-primary btn-lg" href="{% url 'artwork_list' %}">Переглянути роботи</a>
+<section class="text-center py-5">
+    <div class="container">
+        <h1 class="display-4 mb-3 fw-bold">🎨 NFT Store</h1>
+        <p class="lead text-muted mb-4">Місце, де цифрове мистецтво оживає. Купуй, переглядай і створюй унікальні NFT-роботи.</p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{% url 'artwork_list' %}" class="btn btn-outline-primary btn-lg">
+                🔍 Переглянути роботи
+            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'create_artwork' %}" class="btn btn-success btn-lg">
+                    ➕ Додати роботу
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-success btn-lg">
+                    📝 Зареєструватися
+                </a>
+            {% endif %}
+        </div>
     </div>
+</section>
 
-    <hr>
-
-    <h2 class="mt-5">Новини та Розпродажі</h2>
-    <ul class="list-group">
-        <li class="list-group-item">🎉 Новий реліз: 3D персонажі від AlexArt</li>
-        <li class="list-group-item">🔥 Весняний розпродаж: знижки до 30%</li>
-        <li class="list-group-item">🆕 Новий розділ "Анімації" відкрито!</li>
-    </ul>
+<section class="py-5 bg-light border-top">
+    <div class="container">
+        <h2 class="text-center mb-4">🖼 Що ви знайдете у нас?</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-3 shadow-sm border-0">
+                    <div class="fs-1">🧑‍🎨</div>
+                    <h5 class="mt-2">Авторські роботи</h5>
+                    <p class="text-muted">Унікальні цифрові твори від митців з усього світу.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-3 shadow-sm border-0">
+                    <div class="fs-1">💎</div>
+                    <h5 class="mt-2">NFT-покупки</h5>
+                    <p class="text-muted">Купуй безпечно, швидко, з обробкою транзакції онлайн.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-3 shadow-sm border-0">
+                    <div class="fs-1">📦</div>
+                    <h5 class="mt-2">Твоя колекція</h5>
+                    <p class="text-muted">Зберігай і переглядай свої куплені NFT у власному кабінеті.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

@@ -8,31 +8,54 @@
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     {% for artwork in artworks %}
         <div class="col">
-            <div class="card h-100 shadow-sm">
-                {% if artwork.art_type == "image" %}
-                    <img src="{{ artwork.file.url }}" class="card-img-top" alt="{{ artwork.title }}">
+            <div class="card h-100 shadow-sm nft-card"
+                data-title="{{ artwork.title }}"
+                data-type="{{ artwork.get_art_type_display }}"
+                data-price="{{ artwork.price }}"
+                data-author="{{ artwork.author.username }}"
+                data-description="{{ artwork.description|default:'—' }}"
+                data-image="{{ artwork.file.url }}"
+                data-art-id="{{ artwork.id }}"
+                {% if artwork.status == "sold" %}
+                    data-sold="true"
                 {% else %}
-                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    data-sold="false"
+                {% endif %}
+                style="cursor: pointer;"
+            >
+                {% if artwork.art_type == "image" %}
+                    <img src="{{ artwork.file.url }}" alt="{{ artwork.title }}"
+                        class="card-img-top object-fit-cover"
+                        style="height: 160px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 160px;">
                         <p class="text-muted">Інший тип файлу</p>
                     </div>
                 {% endif %}
 
-                <div class="card-body">
-                    <h5 class="card-title">{{ artwork.title }}</h5>
-                    <p class="card-text">
-                        <strong>Тип:</strong> {{ artwork.get_art_type_display }}<br>
-                        <strong>Ціна:</strong> {{ artwork.price }} €<br>
-                        <strong>Автор:</strong> {{ artwork.author.username }}<br>
-                        <strong>Статус:</strong> {{ artwork.get_status_display }}
-                    </p>
-                </div>
+    <div class="card-body">
+        <h5 class="card-title">{{ artwork.title }}</h5>
+        <p class="card-text">
+            <strong>Тип:</strong> {{ artwork.get_art_type_display }}<br>
+            <strong>Ціна:</strong> {{ artwork.price }} €<br>
+            <strong>Автор:</strong> {{ artwork.author.username }}<br>
+            <strong>Статус:</strong> {{ artwork.get_status_display }}
+        </p>
+    </div>
 
-                {% if artwork.art_type != "image" %}
-                    <div class="card-footer text-center">
-                        <a href="{{ artwork.file.url }}" class="btn btn-outline-primary" target="_blank">Переглянути файл</a>
-                    </div>
-                {% endif %}
-            </div>
+    <div class="card-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+        {% if artwork.art_type != "image" %}
+            <a href="{{ artwork.file.url }}" class="btn btn-outline-primary btn-sm" target="_blank">Переглянути файл</a>
+        {% endif %}
+
+        {% if user.is_authenticated and artwork.status != "sold" and user != artwork.author %}
+            <form method="post" action="{% url 'buy_artwork' artwork.id %}" class="d-inline buy-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm buy-button">💸 Купити</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
         </div>
     {% empty %}
         <div class="col">

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Мої покупки - NFT Store{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">🛍️ Мої куплені роботи</h1>
+
+{% if purchases %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        {% for artwork in purchases %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    {% if artwork.art_type == "image" %}
+                        <img src="{{ artwork.file.url }}" class="card-img-top" alt="{{ artwork.title }}">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <p class="text-muted">Інший тип файлу</p>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ artwork.title }}</h5>
+                        <p class="card-text">
+                            <strong>Тип:</strong> {{ artwork.get_art_type_display }}<br>
+                            <strong>Ціна:</strong> {{ artwork.price }} €<br>
+                            <strong>Автор:</strong> {{ artwork.author.username }}<br>
+                        </p>
+                    </div>
+
+                    <div class="card-footer text-center">
+                        <a href="{{ artwork.file.url }}" class="btn btn-outline-primary" target="_blank">📁 Переглянути</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted text-center">Ви ще нічого не придбали.</p>
+{% endif %}
+{% endblock %}
