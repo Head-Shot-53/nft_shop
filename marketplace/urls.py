@@ -12,4 +12,7 @@ urlpatterns = [
     path('categories/', views.category_list, name='category_list'),
     path('category/<int:category_id>/', views.artworks_by_category, name='artworks_by_category'),
     path('change-status/', views.change_artwork_status, name='change_artwork_status'),
+    path('artwork/<int:artwork_id>/buy/', views.process_payment, name='buy_artwork'),
+    path('my-purchases/', views.my_purchases, name='my_purchases'),
+
 ]
